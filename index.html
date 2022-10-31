@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" 
+    rel="stylesheet" 
+    integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" 
+    crossorigin="anonymous">
+    
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<style>
+    h1 {
+  text-align: center;
+  padding: 20px;
+  font-size: 40px;
+}
+h2 {
+  font-size: 60px;
+  position: relative;
+  left: 50px;
+  padding-top: 60px;
+  color: dodgerblue;
+}
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.about {
+  position: relative;
+  text-align: right;
+  top: -170px;
+  right: 0px;
+  font-size: 25px;
+  color: dodgerblue;
+}
+.text-center {
+  color: dodgerblue;
+  font-size: 25px;
+}
+.form-control {
+  border: 1px solid dodgerblue;
+}
+.col:hover {
+  background-color: beige;
+}
+li {
+  text-align: center;
+  color: dodgerblue;
+  font-size: 40px;
+}
+
+</style>
+<body>
+    <h1>
+        The weather
+    </h1>
+<div class="container">
+  <div class="row g-10">
+  <div class="col-sm-5">
+      <form id="form-search">
+    <input type="text" id="search-city" class ="form-control" placeholder="Enter a city" >
+  </div>
+  <div class="col-sm">
+    <input type="submit" class="form-control" value="search" aria-label="State">
+  </div>
+  <div class="col-sm">
+    <input type="text" class="form-control"id="current-location" placeholder="currently" aria-label="zip">
+  </form>
+  </div>
+  <h2>
+    <span id="city-input">Dnipro</span>
+    <span id="temperature"> 19°</span>
+    <a href="#" id="c°"> °C </a> | <a href="#" id="f°"> °F </a>
+    <br />☀️
+  </h2>
+<li id="time"></li>
+<li id="description">Partly Cloudy</li>
+<span class="about">
+    Precipitation:<span id="humidity">74%</span>
+    <br/>
+    Wind:<span id="wind">8km/h</span>
+</span>
+<div class="container text-center">
+  <div class="row">
+    <div class="col">
+        FRI <br/>
+        17°<br/>
+        ☁️ </div>
+    <div class="col">
+        SAT<br/>
+        16°<br/>
+        🌤</div>
+    <div class="col">
+        SUN<br/>
+        17°<br/>
+         🌧</div>
+    <div class="col">
+        MON<br/>
+        19°<br/>
+        🌧</div>
+    <div class="col">
+        TUE<br/>
+        17°<br/>
+         ☀️</div>
+  </div>
+
+</div>
+</div>
+</div>
+</div>
+<a href="https://github.com/Verauk/Homework6" id="code">Open-source code</a>
+
+<script>
+    function currentDate(time) {
+  let hours = time.getHours();
+  if (hours < 10) {
+    hours = `0${hours}`;
+  }
+  let minutes = time.getMinutes();
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+  let dayIndex = time.getDay();
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+  ];
+
+  let day = days[dayIndex];
+  return `${day} ${hours}:${minutes}`;
+}
+function search(event) {
+  event.preventDefault();
+  let cityElement = document.querySelector("#city-input");
+  let cityInput = document.querySelector("#city");
+  cityElement.innerHTML = cityInput;
+}
+
+function convertToFahrenheit(event) {
+  event.preventDefault();
+  let temperatureElement = document.querySelector("#temperature");
+  temperatureElement.innerHTML = 66;
+}
+
+function convertToCelsius(event) {
+  event.preventDefault();
+  let temperatureElement = document.querySelector("#temperature");
+  temperatureElement.innerHTML = 19;
+}
+// #1
+let dateElement = document.querySelector("#time");
+let currentTime = new Date();
+dateElement.innerHTML = currentDate(currentTime);
+// #2
+let formSearch = document.querySelector("#form-search");
+formSearch.addEventListener("submit", search);
+
+// Bonus
+let fahrenheitLink = document.querySelector("#f°");
+fahrenheitLink.addEventListener("click", convertToFahrenheit);
+
+let celsiusLink = document.querySelector("#c°");
+celsiusLink.addEventListener("click", convertToCelsius);
+///
+function displayWeatherCondition(response) {
+  document.querySelector("#city-input").innerHTML = response.data.name;
+  document.querySelector("#temperature").innerHTML = Math.round(
+    response.data.main.temp
+  );
+  document.querySelector("#humidity").innerHTML = response.data.main.humidity;
+  document.querySelector("#wind").innerHTML = Math.round(
+    response.data.wind.speed
+  );
+  document.querySelector("#description").innerHTML =
+    response.data.weather[0].main;
+}
+
+function searchCity(city) {
+  let apiKey = "515c9ddbeb3cda9061acfab71031839e";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+  axios.get(apiUrl).then(displayWeatherCondition);
+}
+
+function handleSubmit(event) {
+  event.preventDefault();
+  let city = document.querySelector("#search-city").value;
+  searchCity(city);
+}
+
+let searchForm = document.querySelector("#form-search");
+searchForm.addEventListener("submit", handleSubmit);
+
+// Current Location
+
+function searchLocation(position) {
+  let latitude = position.coords.latitude;
+  let longitude = position.coords.longitude;
+  let apiKey = "515c9ddbeb3cda9061acfab71031839e";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+
+  axios.get(apiUrl).then(displayWeatherCondition);
+}
+
+function getCurrentLocation(event) {
+  event.preventDefault();
+  navigator.geolocation.getCurrentPosition(searchLocation);
+}
+let currentLocationButton = document.querySelector("#current-location");
+currentLocationButton.addEventListener("click", getCurrentLocation);
+
+searchCity("Dnipro");
+</script>
+</body>
+</html>
